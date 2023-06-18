@@ -26,6 +26,7 @@
 
     <ItemGroup>
       <Folder Include="Identity\Queries\" />
+      <Folder Include="UnityWorlds\Queries\GetWorlds\" />
     </ItemGroup>
 
 </Project>

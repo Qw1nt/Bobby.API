@@ -26,7 +26,9 @@ public class ApplicationDataContext : DbContext, IApplicationDataContext
 
     public DbSet<GameUnit> GameUnits => Set<GameUnit>();
 
-    public DbSet<UnityWorld> GameWorlds => Set<UnityWorld>();
+    public DbSet<UnityWorld> UnityWorlds => Set<UnityWorld>();
     
     public DbSet<UnityGameObject> UnityGameObjects => Set<UnityGameObject>();
+
+    public DbSet<UnityWorldGameObject> UnityWorldGameObjects => Set<UnityWorldGameObject>();
 }

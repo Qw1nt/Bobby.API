@@ -1,10 +1,11 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entities;
 using Mediator;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.UnityWorlds.Commands.MockSave;
 
-public record UnityWorldSaveCommand(string Name, int SceneIndex, List<UnityWorldGameObject> Objects) : IRequest<UnityWorld>;
+public record UnityWorldSaveCommand(string Name, int SceneIndex, List<RequestUnityWorldGameObject> Objects) : IRequest<UnityWorld>;
 
 public class UnityWorldSaveCommandHandler : IRequestHandler<UnityWorldSaveCommand, UnityWorld>
 {
@@ -17,17 +18,40 @@ public class UnityWorldSaveCommandHandler : IRequestHandler<UnityWorldSaveComman
 
     public async ValueTask<UnityWorld> Handle(UnityWorldSaveCommand request, CancellationToken cancellationToken)
     {
+        var objects = await _applicationDataContext.UnityGameObjects
+            .ToListAsync(cancellationToken: cancellationToken);
+
+        var gameObjectsDictionary = objects.ToDictionary(gameObject => gameObject.IdInUnity);
+
+        List<UnityWorldGameObject> worldGameObjects = new(request.Objects.Count);
+        foreach (var worldGameObject in request.Objects)
+        {
+            worldGameObjects.Add(new UnityWorldGameObject
+            {
+                PositionX = worldGameObject.PositionX,
+                PositionY = worldGameObject.PositionY,
+                PositionZ = worldGameObject.PositionZ,          
+                RotationX = worldGameObject.RotationX,
+                RotationY = worldGameObject.RotationY,
+                RotationZ = worldGameObject.RotationZ,
+                Scale = worldGameObject.Scale,
+                UnityReference = gameObjectsDictionary[worldGameObject.UnityGameObjectId],
+            });
+        }
+
+        await _applicationDataContext.UnityWorldGameObjects.AddRangeAsync(worldGameObjects, cancellationToken);
+
         var world = new UnityWorld
         {
             Name = request.Name,
             SceneIndex = request.SceneIndex,
             DateOfCreation = DateTime.UtcNow,
-            Objects = request.Objects
+            Objects = worldGameObjects
         };
-
-        var entry = await _applicationDataContext.GameWorlds.AddAsync(world, cancellationToken);
+        
+        var worldEntry = await _applicationDataContext.UnityWorlds.AddAsync(world, cancellationToken);
         await _applicationDataContext.SaveChangesAsync(cancellationToken);
 
-        return entry.Entity;
+        return worldEntry.Entity;
     }
 }

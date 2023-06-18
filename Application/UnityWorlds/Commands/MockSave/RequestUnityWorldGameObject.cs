@@ -1,9 +1,9 @@
-﻿namespace Domain.Entities;
+﻿namespace Application.UnityWorlds.Commands.MockSave;
 
-public class UnityWorldGameObject : EntityBase
+public class RequestUnityWorldGameObject
 {
-    public UnityGameObject UnityReference { get; set; } = null!;
-
+    public int UnityGameObjectId { get; set; }
+    
     public float PositionX { get; set; }
 
     public float PositionY { get; set; }

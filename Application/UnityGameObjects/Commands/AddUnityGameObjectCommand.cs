@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.UnityGameObjects.Commands;
 
-public record AddUnityGameObjectCommand(int IdInUnity) : IRequest<bool>;
+public record AddUnityGameObjectCommand(int IdInUnity, string Name) : IRequest<bool>;
 
 public class AddUnityGameObjectCommandHandler : IRequestHandler<AddUnityGameObjectCommand, bool>
 {
@@ -18,15 +18,15 @@ public class AddUnityGameObjectCommandHandler : IRequestHandler<AddUnityGameObje
 
     public async ValueTask<bool> Handle(AddUnityGameObjectCommand request, CancellationToken cancellationToken)
     {
-        var alreadyExist =  await _applicationDataContext.UnityGameObjects
-                .AsNoTracking()
-                .AnyAsync(x => x.IdInUnity == request.IdInUnity, cancellationToken: cancellationToken);
+        var alreadyExist = await _applicationDataContext.UnityGameObjects
+            .AsNoTracking()
+            .AnyAsync(x => x.IdInUnity == request.IdInUnity, cancellationToken: cancellationToken);
 
         if (alreadyExist == true)
             return false;
 
         await _applicationDataContext.UnityGameObjects
-            .AddAsync(new UnityGameObject() {IdInUnity = request.IdInUnity}, cancellationToken);
+            .AddAsync(new UnityGameObject {IdInUnity = request.IdInUnity, Name = request.Name}, cancellationToken);
         await _applicationDataContext.SaveChangesAsync(cancellationToken);
 
         return true;

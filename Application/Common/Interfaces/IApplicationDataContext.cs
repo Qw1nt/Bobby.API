@@ -12,9 +12,11 @@ public interface IApplicationDataContext
     
     public DbSet<GameUnit> GameUnits { get; }
     
-    public DbSet<UnityWorld> GameWorlds { get; }
+    public DbSet<UnityWorld> UnityWorlds { get; }
     
     public DbSet<UnityGameObject> UnityGameObjects { get; }
+    
+    public DbSet<UnityWorldGameObject> UnityWorldGameObjects { get; }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
