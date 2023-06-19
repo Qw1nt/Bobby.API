@@ -24,18 +24,21 @@ public static class AuthenticationExtensions
         configuration.GetSection(AuthenticationConfiguration.SectionKey).Bind(authenticationConfig);
 
         services.AddSingleton(authenticationConfig);
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+        services.AddAuthentication(x =>
         {
-            options.RequireHttpsMetadata = false;
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            // options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
+                ValidateIssuerSigningKey = false,
                 IssuerSigningKey = authenticationConfig.SymmetricSecurityKey(),
-
-                ClockSkew = TimeSpan.Zero,
             };
         });
         return services;

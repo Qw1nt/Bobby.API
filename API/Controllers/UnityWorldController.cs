@@ -100,8 +100,8 @@ public class UnityWorldController : ApiControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
+    // [Authorize]
     [HttpPut("object/{id:int}")]
-    [Authorize]
     public async Task<IActionResult> RemoveObject([FromRoute] int id)
     {
         var gameObject = await _applicationDataContext.UnityWorldGameObjects
